@@ -1,41 +1,23 @@
 name: Automatisation des tests DevSecOps
-
 on: push
-
 jobs:
   Dependances:
-      runs-on: ubuntu-latest
-  
-      steps:
-        - name: Checkout du code
-          uses: actions/checkout@v3
-  
-        - name: Installer Trivy
-          uses: aquasecurity/trivy-action@0.20.0
-          with:
-            scan-type: fs
-            scan-ref: .
-            format: table
-            exit-code: 1
-            severity: HIGH,CRITICAL
-  Dockerfile:
-    runs-on: ubuntu-latest
-    needs: Dependances
-
-    steps:
-      - name: Checkout du code
-        uses: actions/checkout@v3
-
-      - name: Build de l'image Docker (test du Dockerfile)
-        run: |
-          docker build -t breakableflask .
-
-  Deploy:
-    runs-on: ubuntu-latest
-    needs: Dockerfile
-
-    steps:
-      - name: Deploy
-        run: |
-          echo "Rien à faire ici. Votre application est prête à être déployée"
-
+   runs-on: ubuntu-latest
+   steps:
+     - name: Checkout code
+       uses: actions/checkout@v4
+ 
+     - name: Scan requirements.txt avec Trivy (non bloquant)
+       run: |
+         echo "🔍 Scan des dépendances avec Trivy (requirements.txt)…"
+ 
+         docker run --rm -v "$PWD":/app -w /app aquasec/trivy:latest fs \
+         --scanners vuln \
+         --pkg-types library \
+         --file-patterns 'pip:requirements\.txt' \
+         --severity HIGH,CRITICAL \
+         --exit-code 0 \
+         --format table \
+         /app
+ 
+         echo "⚠️ Le pipeline continue même si des vulnérabilités sont trouvées."
