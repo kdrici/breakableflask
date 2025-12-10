@@ -12,6 +12,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copier tout le reste du projet
 COPY . .
 
-# Lancer l'application
+# Lancer l'applicationn
 CMD ["python", "main.py"]
 
