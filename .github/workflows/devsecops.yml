@@ -38,4 +38,4 @@ jobs:
     steps:
       - name: Deploy
         run: |
-          echo "Rien à faire ici. Votre application est prête à être déployée"
+          echo "Rien à faire ici. Votre application eest prête à être déployée"
