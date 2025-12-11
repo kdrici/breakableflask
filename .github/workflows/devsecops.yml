@@ -18,17 +18,17 @@ jobs:
       - name: Scan de securite avec Trivy (non bloquant)
         uses: aquasecurity/trivy-action@0.20.0
         with:
-          scan-type: fs          # scan du filesystem du repo
-          scan-ref: .            # à partir de la racine
-          vuln-type: os,library  # OS + libs (dont pip/requirements.txt)
+          scan-type: fs         
+          scan-ref: .           
+          vuln-type: os,library  
           severity: LOW,MEDIUM,HIGH,CRITICAL
-          format: table          # joli tableau dans les logs
-          exit-code: 0           # 🔴 IMPORTANT : ne fait JAMAIS echouer le job
+          format: table       
+          exit-code: 0          
 
   dockerfile:
     name: Build de l'image Docker
     runs-on: ubuntu-latest
-    needs: dependances          # se lance après le scan
+    needs: dependances        
 
     steps:
       - name: Checkout du code
