@@ -15,43 +15,21 @@ jobs:
       - name: Checkout du code
         uses: actions/checkout@v4
 
-      - name: Create reports directory
-        run: mkdir -p reports
-
-      - name: Scan de securite avec Trivy (Markdown)
-        uses: aquasecurity/trivy-action@0.33.1
-        with:
-          scan-type: fs
-          scan-ref: .
-          vuln-type: os,library
-          severity: LOW,MEDIUM,HIGH,CRITICAL
-          format: template
-          # Template par defaut installe par setup-trivy
-          template: "@$HOME/.local/bin/trivy-bin/contrib/markdown.tpl"
-          output: reports/vulnerability-report.markdown
-          exit-code: 0
-          # Optionnel : fixe la version du binaire Trivy
-          version: v0.68.1
-
-      - name: Scan de securite avec Trivy (Table)
-        uses: aquasecurity/trivy-action@0.33.1
+      - name: Scan de securite avec Trivy (non bloquant)
+        uses: aquasecurity/trivy-action@0.20.0
         with:
           scan-type: fs
           scan-ref: .
           vuln-type: os,library
           severity: LOW,MEDIUM,HIGH,CRITICAL
           format: table
-          output: reports/vulnerability-report
           exit-code: 0
-          skip-setup-trivy: true
-
-      - name: Upload vulnerability artifacts
+          
+      - name: Upload rapport Dockerfile
         uses: actions/upload-artifact@v4
-        if: always()
         with:
-          name: vulnerability-reports
-          path: reports/
-          retention-days: 7
+          name: trivy-reports-dockerfile
+          path: reports/trivy-dockerfile.txt
 
   dockerfile:
     name: Build de l'image Docker
