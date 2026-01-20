@@ -19,19 +19,22 @@ jobs:
         run: mkdir -p reports
 
       - name: Scan de securite avec Trivy (Markdown)
-        uses: aquasecurity/trivy-action@0.56.0
+        uses: aquasecurity/trivy-action@0.33.1
         with:
           scan-type: fs
           scan-ref: .
           vuln-type: os,library
           severity: LOW,MEDIUM,HIGH,CRITICAL
           format: template
-          template: "@contrib/markdown.tpl"
+          # Template par defaut installe par setup-trivy
+          template: "@$HOME/.local/bin/trivy-bin/contrib/markdown.tpl"
           output: reports/vulnerability-report.markdown
           exit-code: 0
+          # Optionnel : fixe la version du binaire Trivy
+          version: v0.68.1
 
       - name: Scan de securite avec Trivy (Table)
-        uses: aquasecurity/trivy-action@0.56.0
+        uses: aquasecurity/trivy-action@0.33.1
         with:
           scan-type: fs
           scan-ref: .
@@ -40,6 +43,7 @@ jobs:
           format: table
           output: reports/vulnerability-report
           exit-code: 0
+          skip-setup-trivy: true
 
       - name: Upload vulnerability artifacts
         uses: actions/upload-artifact@v4
