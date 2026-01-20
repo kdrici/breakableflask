@@ -15,15 +15,40 @@ jobs:
       - name: Checkout du code
         uses: actions/checkout@v4
 
-      - name: Scan de securite avec Trivy (non bloquant)
-        uses: aquasecurity/trivy-action@0.20.0
+      - name: Create reports directory
+        run: mkdir -p reports
+
+      - name: Scan de securite avec Trivy (Markdown)
+        uses: aquasecurity/trivy-action@0.28.0
         with:
-          scan-type: fs         
-          scan-ref: .           
-          vuln-type: os,library  
+          scan-type: fs
+          scan-ref: .
+          vuln-type: os,library
           severity: LOW,MEDIUM,HIGH,CRITICAL
-          format: table       
-          exit-code: 0          
+          format: template
+          template: "@contrib/markdown.tpl"
+          output: reports/vulnerability-report.markdown
+          exit-code: 0
+
+      - name: Scan de securite avec Trivy (Table)
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          vuln-type: os,library
+          severity: LOW,MEDIUM,HIGH,CRITICAL
+          format: table
+          output: reports/vulnerability-report
+          exit-code: 0
+
+      - name: Upload vulnerability artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vulnerability-reports
+          path: reports/
+          retention-days: 7
+          
 
   dockerfile:
     name: Build de l'image Docker
