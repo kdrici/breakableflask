@@ -15,7 +15,10 @@ jobs:
       - name: Checkout du code
         uses: actions/checkout@v4
 
-      - name: Scan de securite avec Trivy (non bloquant)
+      - name: Create reports directory
+        run: mkdir -p reports
+
+      - name: Scan de securite avec Trivy (non bloquant) + rapport
         uses: aquasecurity/trivy-action@0.20.0
         with:
           scan-type: fs
@@ -23,13 +26,17 @@ jobs:
           vuln-type: os,library
           severity: LOW,MEDIUM,HIGH,CRITICAL
           format: table
+          output: reports/trivy-dockerfile.txt
           exit-code: 0
-          
-      - name: Upload rapport Dockerfile
+
+      - name: Upload rapport Trivy
         uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: trivy-reports-dockerfile
+          name: trivy-reports
           path: reports/trivy-dockerfile.txt
+          if-no-files-found: error
+          retention-days: 7
 
   dockerfile:
     name: Build de l'image Docker
